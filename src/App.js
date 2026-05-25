@@ -102,11 +102,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerView: {
-    marginBottom: 9,
+    marginBottom: 5,
     paddingVertical: 3
   },
   headerText: {
-    fontSize: 28,
+    fontSize: 29,
     fontWeight: 'bold',
     textAlign: 'center'
   },
