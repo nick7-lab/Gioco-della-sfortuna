@@ -33,13 +33,13 @@ const Body = ({start, setStart, sfortunaCasuale}) => {
   if (start == false){
     return(
       <View> 
-        <View style = {{marginBottom: 70}}>
+        <View style = {{marginBottom: 65}}>
           <Text style = {styles.bodyText}>
             Inizia game: 
           </Text>
         </View>
 
-        <View style = {{alignItems: 'center', marginBottom: 45}}>
+        <View style = {{alignItems: 'center', marginBottom: 50}}>
           <TouchableOpacity 
             style={styles.bodyCustomButton1} 
             onPress={() => setStart(true)}
@@ -52,8 +52,11 @@ const Body = ({start, setStart, sfortunaCasuale}) => {
         <View style = {styles.card} key = {sfortuneList[sfortunaCasuale].id}>
           <Image
             source = {sfortuneList[sfortunaCasuale].immagine}
-            style = {{height: 180, width: '100%'}}
+            style = {{height: 180, width: '100%', marginBottom: 10}}
           />
+          <Text style = {{fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>
+            La sfortuna a tuo servizio
+          </Text>
         </View>
       </View>
     )
@@ -99,7 +102,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerView: {
-    borderWidth: 1,
     marginBottom: 9,
     paddingVertical: 3
   },
@@ -135,6 +137,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F2F4F8',
     borderRadius: 20,
-    
+    overflow: 'hidden',
+    width: 300,
+    alignSelf: 'center'
   },
 })
