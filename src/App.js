@@ -117,6 +117,24 @@ const Footer = ({start, playerCards, setPlayerCards}) => {
       </View>
     )
   }
+  else {
+    return(
+      <ScrollView
+        horizontal = {true}
+        showsHorizontalScrollIndicator = {true}
+        style = {{alignItems: 'center'}}
+      >
+      {playerCards.map((v) => (
+        <View key = {v.id} style = {styles.cardFooter}>
+          <Image
+            source = {sfortuneList[v].immagine}
+            style = {{height: 180, width: '100%', marginBottom: 10}}
+          />
+        </View>
+      ))}
+      </ScrollView>
+    )
+  }
 }
 
 /**
@@ -195,4 +213,13 @@ const styles = StyleSheet.create({
     width: 280,
     alignSelf: 'center'
   },
+  cardFooter: {
+    alignItems: 'center',
+    backgroundColor: '#F2F4F8',
+    borderRadius: 20,
+    overflow: 'hidden',
+    width: 250,
+    alignSelf: 'center',
+    marginRight: 20
+  }
 })
