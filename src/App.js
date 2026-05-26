@@ -3,16 +3,37 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context'
 import React, {useState} from 'react'
 import sfortuneList from './card.js'
 
-const startGame = (setPlayerCards) => {
+const generateDifferentCards = (alreadyCreatedCards) => {
+  let sfortunaCasuale
+  let trovato = false
+
+  while (!trovato) {
+    let counter = 0
+    let numeroCasuale = Math.floor(Math.random() * 50) + 1 
+
+    for (let i = 0; i < alreadyCreatedCards.length; i++) {
+      if (numeroCasuale != alreadyCreatedCards[i]) {
+        counter += 1
+      }
+    }
+
+    if (counter === alreadyCreatedCards.length) {
+      sfortunaCasuale = numeroCasuale
+      trovato = true 
+    }
+  }
+  
+  return sfortunaCasuale
+}
+
+const startGame = ({setPlayerCards, setAlreadyCreatedCards}) => {
     const nuoveCarte = []
     let numeroCasuale = 0
     let counter = 0
 
-    console.log("sono in startGame")
-
     while(nuoveCarte.length < 3 ){
       counter = 0
-      numeroCasuale = Math.floor(Math.random() * (50) + 1)
+      numeroCasuale = Math.floor(Math.random() * 50) + 1
 
       for (let i=0; i<nuoveCarte.length; i++){
         if (numeroCasuale != nuoveCarte[i]){
@@ -20,24 +41,15 @@ const startGame = (setPlayerCards) => {
         }
       }
 
-      if (counter == nuoveCarte.length){
+      if (counter == nuoveCarte.length) {
         nuoveCarte[nuoveCarte.length] = numeroCasuale
       }
     }
 
-    for(let i=0; i<nuoveCarte.length; i++){
-      console.log(nuoveCarte[i])
-    }
     setPlayerCards([...nuoveCarte])
+    setAlreadyCreatedCards([...nuoveCarte])
 }
 
-/**
- * Componente che renderizza l'intestazione dell'applicazione.
- * Mostra il titolo del gioco centrato all'interno di un box con bordo.
- *
- * @component
- * @returns {React.JSX.Element} L'elemento Header per la parte superiore dello schermo.
- */
 const Header = () => {
   return(
     <View style = {styles.headerView}>
@@ -48,15 +60,7 @@ const Header = () => {
   )
 }
 
-/**
- * Componente che gestisce il testo principale del gioco in base allo stato attuale.
- *
- * @component
- * @param {Object} props - Le proprietà del componente.
- * @param {boolean} props.start - Indica se il gioco è avviato (true) o deve ancora iniziare (false).
- * @returns {React.JSX.Element} Il testo del corpo del gioco.
- */
-const Body = ({start, setStart, playerCards, setPlayerCards}) => {
+const Body = ({start, setStart, setPlayerCards, alreadyCreatedCards, setAlreadyCreatedCards}) => {
 
   if (start == false){
     return(
@@ -71,7 +75,7 @@ const Body = ({start, setStart, playerCards, setPlayerCards}) => {
           <TouchableOpacity 
             style={styles.bodyCustomButton1} 
             onPress={() => {
-             startGame(setPlayerCards)
+             startGame({setPlayerCards, setAlreadyCreatedCards})
              setStart(true)}
             }
             activeOpacity={0.7} 
@@ -84,15 +88,26 @@ const Body = ({start, setStart, playerCards, setPlayerCards}) => {
     )
   }
   else {
-    
+    const sfortunaCasuale = generateDifferentCards(alreadyCreatedCards)
+    const cartaCorrente = sfortuneList[sfortunaCasuale]
+
     return(
       <View>
         <TouchableOpacity 
           onPress={() => setStart(false)}
+          style = {{marginBottom: 10}}
         >
         <Text style = {{color: 'white'}}> Ricomincia </Text>
         </TouchableOpacity>
-
+        {cartaCorrente && (
+          <View style = {styles.card} key = {cartaCorrente.id}>
+            <Text style = {{color: 'black'}}> Colloca la seguente sfortuna: </Text>
+            <Image
+              source = {cartaCorrente.immagine}
+              style = {{height: 180, width: '100%', marginBottom: 10}}
+            />
+          </View>
+        )}
       </View>
     )
   }
@@ -100,20 +115,23 @@ const Body = ({start, setStart, playerCards, setPlayerCards}) => {
 }
 
 const Footer = ({start, playerCards, setPlayerCards}) => {
-  const sfortunaCasuale = Math.floor(Math.random() * (50) + 1)
+  const sfortunaCasuale = Math.floor(Math.random() * 50) + 1
+  const cartaIniziale = sfortuneList[sfortunaCasuale]
 
   if (start == false){
     return(
       <View>
-        <View style = {styles.card} key = {sfortuneList[sfortunaCasuale].id}>
+        {cartaIniziale && (
+          <View style = {styles.card} key = {cartaIniziale.id}>
             <Image
-              source = {sfortuneList[sfortunaCasuale].immagine}
+              source = {cartaIniziale.immagine}
               style = {{height: 180, width: '100%', marginBottom: 10}}
             />
-            <Text style = {{fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>
+            <Text style = {{fontSize: 15, fontWeight: 'bold', marginBottom: 10, color: 'black' }}>
               La sfortuna a tuo servizio
             </Text>
           </View>
+        )}
       </View>
     )
   }
@@ -122,37 +140,43 @@ const Footer = ({start, playerCards, setPlayerCards}) => {
       <ScrollView
         horizontal = {true}
         showsHorizontalScrollIndicator = {true}
-        style = {{alignItems: 'center'}}
+        style = {{navigatorStyle: 'center'}}
+        contentContainerStyle={{alignItems: 'center'}}
       >
-      {playerCards.map((v) => (
-        <View key = {v.id} style = {styles.cardFooter}>
-          <Image
-            source = {sfortuneList[v].immagine}
-            style = {{height: 180, width: '100%', marginBottom: 10}}
-          />
-        </View>
-      ))}
+      {playerCards.map((v) => {
+        const carta = sfortuneList[v]
+        if (!carta) return null
+
+        return (
+          <View key = {carta.id} style = {styles.cardFooter}>
+            <Image
+              source = {carta.immagine}
+              style = {{height: 180, width: '100%', marginBottom: 10}}
+            />
+          </View>
+        )
+      })}
       </ScrollView>
     )
   }
 }
 
-/**
- * Componente principale dell'app React Native.
- *
- * @component
- * @returns {React.JSX.Element} Il punto di ingresso principale dell'interfaccia dell'app.
- */
 export default function App() {
   const [start, setStart] = useState(false)
   const [playerCards, setPlayerCards] = useState([])
-  
+  const [alreadyCreatedCards, setAlreadyCreatedCards] = useState([])
+
   return(
     <SafeAreaProvider>
       <SafeAreaView style = {styles.containerMaster}>
         <Header/>
-        <Body start = {start} setStart = {setStart} 
-         playerCards = {playerCards} setPlayerCards = {setPlayerCards}/>
+        <Body 
+          start = {start} 
+          setStart = {setStart} 
+          setPlayerCards = {setPlayerCards}
+          alreadyCreatedCards = {alreadyCreatedCards}
+          setAlreadyCreatedCards = {setAlreadyCreatedCards}
+          />
         <Footer
           start = {start}
           playerCards = {playerCards}
