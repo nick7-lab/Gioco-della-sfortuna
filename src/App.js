@@ -3,6 +3,34 @@ import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context'
 import React, {useState} from 'react'
 import sfortuneList from './card.js'
 
+const startGame = (setPlayerCards) => {
+    const nuoveCarte = []
+    let numeroCasuale = 0
+    let counter = 0
+
+    console.log("sono in startGame")
+
+    while(nuoveCarte.length < 3 ){
+      counter = 0
+      numeroCasuale = Math.floor(Math.random() * (50) + 1)
+
+      for (let i=0; i<nuoveCarte.length; i++){
+        if (numeroCasuale != nuoveCarte[i]){
+          counter += 1
+        }
+      }
+
+      if (counter == nuoveCarte.length){
+        nuoveCarte[nuoveCarte.length] = numeroCasuale
+      }
+    }
+
+    for(let i=0; i<nuoveCarte.length; i++){
+      console.log(nuoveCarte[i])
+    }
+    setPlayerCards([...nuoveCarte])
+}
+
 /**
  * Componente che renderizza l'intestazione dell'applicazione.
  * Mostra il titolo del gioco centrato all'interno di un box con bordo.
@@ -31,25 +59,6 @@ const Header = () => {
 const Body = ({start, setStart, playerCards, setPlayerCards}) => {
 
   const sfortunaCasuale = Math.floor(Math.random() * (50) + 1)
-  
-  const startGame = () => {
-    const nuoveCarte = []
-    const numeroCasualePrecedente = 0
-
-    while (nuoveCarte.length < 3){
-      const numeroCasuale = 0
-
-      while (numeroCasuale != numeroCasualePrecedente){
-        numeroCasuale = Math.floor(Math.random() * (50) + 1)
-
-        for (let i = 0; i < nuoveCarte.length; i++){
-          numeroCasualePrecedente = nuoveCarte[i]
-        }
-        
-      }
-    }
-    setPlayerCards(nuoveCarte)
-  }
 
   if (start == false){
     return(
@@ -63,7 +72,10 @@ const Body = ({start, setStart, playerCards, setPlayerCards}) => {
         <View style = {{alignItems: 'center', marginBottom: 50}}>
           <TouchableOpacity 
             style={styles.bodyCustomButton1} 
-            onPress={() => setStart(true)}
+            onPress={() => {
+             startGame(setPlayerCards)
+             setStart(true)}
+            }
             activeOpacity={0.7} 
           >
           <Text style={styles.bodyCustomButtonText1}>START</Text>
@@ -134,7 +146,7 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   bodyStartView: {
-    marginBottom: 65,       
+    marginBottom: 60,       
   },
   bodyStartText: {
     textAlign: 'center',
