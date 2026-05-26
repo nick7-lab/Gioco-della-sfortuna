@@ -58,8 +58,6 @@ const Header = () => {
  */
 const Body = ({start, setStart, playerCards, setPlayerCards}) => {
 
-  const sfortunaCasuale = Math.floor(Math.random() * (50) + 1)
-
   if (start == false){
     return(
       <View > 
@@ -69,7 +67,7 @@ const Body = ({start, setStart, playerCards, setPlayerCards}) => {
           </Text>
         </View>
 
-        <View style = {{alignItems: 'center', marginBottom: 50}}>
+        <View style = {{alignItems: 'center', marginBottom: 60}}>
           <TouchableOpacity 
             style={styles.bodyCustomButton1} 
             onPress={() => {
@@ -82,15 +80,6 @@ const Body = ({start, setStart, playerCards, setPlayerCards}) => {
           </TouchableOpacity>
         </View>
         
-        <View style = {styles.card} key = {sfortuneList[sfortunaCasuale].id}>
-          <Image
-            source = {sfortuneList[sfortunaCasuale].immagine}
-            style = {{height: 180, width: '100%', marginBottom: 10}}
-          />
-          <Text style = {{fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>
-            La sfortuna a tuo servizio
-          </Text>
-        </View>
       </View>
     )
   }
@@ -103,10 +92,31 @@ const Body = ({start, setStart, playerCards, setPlayerCards}) => {
         >
         <Text style = {{color: 'white'}}> Ricomincia </Text>
         </TouchableOpacity>
+
       </View>
     )
   }
   
+}
+
+const Footer = ({start, playerCards, setPlayerCards}) => {
+  const sfortunaCasuale = Math.floor(Math.random() * (50) + 1)
+
+  if (start == false){
+    return(
+      <View>
+        <View style = {styles.card} key = {sfortuneList[sfortunaCasuale].id}>
+            <Image
+              source = {sfortuneList[sfortunaCasuale].immagine}
+              style = {{height: 180, width: '100%', marginBottom: 10}}
+            />
+            <Text style = {{fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>
+              La sfortuna a tuo servizio
+            </Text>
+          </View>
+      </View>
+    )
+  }
 }
 
 /**
@@ -125,6 +135,11 @@ export default function App() {
         <Header/>
         <Body start = {start} setStart = {setStart} 
          playerCards = {playerCards} setPlayerCards = {setPlayerCards}/>
+        <Footer
+          start = {start}
+          playerCards = {playerCards}
+          setPlayerCards = {setPlayerCards}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   )
