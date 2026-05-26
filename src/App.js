@@ -14,7 +14,7 @@ const Header = () => {
   return(
     <View style = {styles.headerView}>
     <Text style = {styles.headerText} >
-      Gioco della sfortuna
+      GIOCO DELLA SFORTUNA
     </Text>
   </View>
   )
@@ -28,13 +28,34 @@ const Header = () => {
  * @param {boolean} props.start - Indica se il gioco è avviato (true) o deve ancora iniziare (false).
  * @returns {React.JSX.Element} Il testo del corpo del gioco.
  */
-const Body = ({start, setStart, sfortunaCasuale}) => {
+const Body = ({start, setStart, playerCards, setPlayerCards}) => {
+
+  const sfortunaCasuale = Math.floor(Math.random() * (50) + 1)
+  
+  const startGame = () => {
+    const nuoveCarte = []
+    const numeroCasualePrecedente = 0
+
+    while (nuoveCarte.length < 3){
+      const numeroCasuale = 0
+
+      while (numeroCasuale != numeroCasualePrecedente){
+        numeroCasuale = Math.floor(Math.random() * (50) + 1)
+
+        for (let i = 0; i < nuoveCarte.length; i++){
+          numeroCasualePrecedente = nuoveCarte[i]
+        }
+        
+      }
+    }
+    setPlayerCards(nuoveCarte)
+  }
 
   if (start == false){
     return(
-      <View> 
-        <View style = {{marginBottom: 65}}>
-          <Text style = {styles.bodyText}>
+      <View > 
+        <View style = {styles.bodyStartView}>
+          <Text style = {styles.bodyStartText}>
             Inizia game: 
           </Text>
         </View>
@@ -62,13 +83,13 @@ const Body = ({start, setStart, sfortunaCasuale}) => {
     )
   }
   else {
+    
     return(
       <View>
         <TouchableOpacity 
           onPress={() => setStart(false)}
-          activeOpacity={0.7} 
         >
-        <Text> Ricomincia </Text>
+        <Text style = {{color: 'white'}}> Ricomincia </Text>
         </TouchableOpacity>
       </View>
     )
@@ -84,14 +105,14 @@ const Body = ({start, setStart, sfortunaCasuale}) => {
  */
 export default function App() {
   const [start, setStart] = useState(false)
-  const sfortunaCasuale = Math.floor(Math.random() * (50) + 1)
-  console.log(sfortunaCasuale)
-
+  const [playerCards, setPlayerCards] = useState([])
+  
   return(
     <SafeAreaProvider>
       <SafeAreaView style = {styles.containerMaster}>
         <Header/>
-        <Body start = {start} setStart = {setStart} sfortunaCasuale = {sfortunaCasuale} />
+        <Body start = {start} setStart = {setStart} 
+         playerCards = {playerCards} setPlayerCards = {setPlayerCards}/>
       </SafeAreaView>
     </SafeAreaProvider>
   )
@@ -100,19 +121,25 @@ export default function App() {
 const styles = StyleSheet.create({
   containerMaster: {
     flex: 1,
+    backgroundColor: 'black'
   },
   headerView: {
-    marginBottom: 5,
+    marginBottom: 4,
     paddingVertical: 3
   },
   headerText: {
-    fontSize: 29,
+    fontSize: 25,
     fontWeight: 'bold',
-    textAlign: 'center'
+    textAlign: 'center',
+    color: 'white'
   },
-  bodyText: {
+  bodyStartView: {
+    marginBottom: 65,       
+  },
+  bodyStartText: {
     textAlign: 'center',
     fontSize: 18,
+    color: 'white'
   },
   bodyCustomButton1: {
     backgroundColor: '#ff5722', 
@@ -138,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2F4F8',
     borderRadius: 20,
     overflow: 'hidden',
-    width: 300,
+    width: 280,
     alignSelf: 'center'
   },
 })
