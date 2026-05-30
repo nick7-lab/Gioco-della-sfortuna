@@ -29,7 +29,7 @@ export default [
     {id: 6, immagine: require('./assets/CalzinoAppallottolato.jfif'), titolo: 'Calzino appallottato',
     indiceSfortuna: 3},
 
-    {id: 7, immagine: require('./assets/ChestDayDolori.jfif'), titolo: 'Il dolore nel chest day',
+    {id: 7, immagine: require('./assets/ChestDayDolori.jfif'), titolo: 'Il dolore proprio nel chest day',
     indiceSfortuna: 15},
 
     {id: 8, immagine: require('./assets/ColpoMignolo.jfif'), titolo: 'Colpo sul mignolo',
@@ -53,7 +53,7 @@ export default [
     {id: 14, immagine: require('./assets/EsplosioneShaker.jfif'), titolo: "L'esplosione proteica'",
     indiceSfortuna: 38},
 
-    {id: 15, immagine: require('./assets/GymToker.jfif'), titolo: 'La gymtoker',
+    {id: 15, immagine: require('./assets/GymToker.jfif'), titolo: 'La gymtoker proprio vicino a te',
     indiceSfortuna: 30},
 
     {id: 16, immagine: require('./assets/HaiFattoCadereTutto.jfif'), titolo: 'Lo sparpagliamento',
@@ -65,10 +65,10 @@ export default [
     {id: 18, immagine: require('./assets/HaiPersoLaScheda.jfif'), titolo: "Dov'è la dannata scheda?",
     indiceSfortuna: 8},
 
-    {id: 19, immagine: require('./assets/HaiPersoLAsciugamanp.jfif'), titolo: "Ma l'asciugamano",
+    {id: 19, immagine: require('./assets/HaiPersoLAsciugamanp.jfif'), titolo: "Ma l'asciugamano dov'è?",
     indiceSfortuna: 4},
 
-    {id: 20, immagine: require('./assets/HannoRubatoIManubri.jfif'), titolo: 'Manco fossimo a Napoli',
+    {id: 20, immagine: require('./assets/HannoRubatoIManubri.jfif'), titolo: 'Manco fossimo a Napoli (ti hanno rubato i pesi)',
     indiceSfortuna: 13},
 
     {id: 21, immagine: require('./assets/IlBroNonCe.jfif'), titolo: 'Oggi allenamento senza il bro',
@@ -77,34 +77,34 @@ export default [
     {id: 22, immagine: require('./assets/IlCane.jfif'), titolo: 'E questo proprio a me doveva scassare la m...',
     indiceSfortuna: 44},
 
-    {id: 23, immagine: require('./assets/IlCrampo.jfif'), titolo: 'O mammi mi c dlor',
+    {id: 23, immagine: require('./assets/IlCrampo.jfif'), titolo: 'O mammi mi c dlor (il crampo al polpaccio)',
     indiceSfortuna: 35},
 
     {id: 24, immagine: require('./assets/IlLegDay.jfif'), titolo: 'Noooo il leg day nooo',
     indiceSfortuna: 33},
 
-    {id: 25, immagine: require('./assets/IlSalutoSosia.jfif'), titolo: 'E quist c vo mo',
+    {id: 25, immagine: require('./assets/IlSalutoSosia.jfif'), titolo: 'E quist c vo mo (Saluti la persona sbagliata credendo che è il tuo bro',
     indiceSfortuna: 27},
 
-    {id: 26, immagine: require('./assets/IlTizioDelPosare.jfif'), titolo: 'Il tizio strano', 
+    {id: 26, immagine: require('./assets/IlTizioDelPosare.jfif'), titolo: 'Il tizio strano ti sta fissando mentre si spalma la crema in maniera sensuale', 
     indiceSfortuna: 39},
 
-    {id: 27, immagine: require('./assets/Infortunio.jfif'), titolo: 'Aiaaa (chi m la fatt fa)',
+    {id: 27, immagine: require('./assets/Infortunio.jfif'), titolo: 'Aiaaa (chi m la fatt fa). Volevi essere un duro, ma sei caduto',
     indiceSfortuna: 46},
 
-    {id: 28, immagine: require('./assets/LaTrappola.jfif'), titolo: 'La trappola',
+    {id: 28, immagine: require('./assets/LaTrappola.jfif'), titolo: 'La trappola (cacarella)',
     indiceSfortuna: 29},
 
     {id: 29, immagine: require('./assets/LucchettoSmemorato.jfif'), titolo: 'NOOO, e mo?',
     indiceSfortuna: 55},
 
-    {id: 30, immagine: require('./assets/MacchinarioOccupato.jfif'), titolo: 'Ci alterniamo?',
+    {id: 30, immagine: require('./assets/MacchinarioOccupato.jfif'), titolo: 'Macchinario occupato. Ci alterniamo?',
     indiceSfortuna: 7},
 
     {id: 31, immagine: require('./assets/MagliaAlContrario.jfif'), titolo: 'La maglia a contrario',
     indiceSfortuna: 12},
 
-    {id: 32, immagine: require('./assets/MaledettoElastico.jfif'), titolo: 'Auch!!!(proprj da)',
+    {id: 32, immagine: require('./assets/MaledettoElastico.jfif'), titolo: 'Auch!!!(proprj da). L elastico proprio lì',
     indiceSfortuna: 43},
 
     {id: 33, immagine: require('./assets/MoscierinoGigante.jfif'), titolo: 'Il moscerone nel boccone',
@@ -122,7 +122,7 @@ export default [
     {id: 37, immagine: require('./assets/Peso50kg.jfif'), titolo: 'Hai ottenuto il dolore più acuto(complimenti)',
     indiceSfortuna: 95},
 
-    {id: 38, immagine: require('./assets/Peso5kg.jfif'), titolo: 'AAAAAA', indiceSfortuna: 49},
+    {id: 38, immagine: require('./assets/Peso5kg.jfif'), titolo: 'AAAAAA che dolore', indiceSfortuna: 49},
 
     {id: 39, immagine: require('./assets/PetoFragoroso.jfif'), titolo: "l'urlo liberatorio(e non solo)",
     indiceSfortuna: 70},
@@ -140,7 +140,7 @@ export default [
 
     {id: 44, immagine: require('./assets/StortaPugno.jfif'), titolo: 'Colpa del saccone', indiceSfortuna: 32},
 
-    {id: 45, immagine: require('./assets/SudoreAltrui.jfif'), titolo: 'Che schif',
+    {id: 45, immagine: require('./assets/SudoreAltrui.jfif'), titolo: 'Che schif (sudore altrui)',
     indiceSfortuna: 31},
 
     {id: 46, immagine: require('./assets/TiDimentichi.jfif'), titolo: 'Ti sei dimenticato di nuovo !?',
