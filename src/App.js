@@ -42,7 +42,6 @@ const generateDifferentCards = (alreadyCreatedCards) => {
 const ordinaCarteCrescenti = (arrayDaOrdinare) => {
   for (let i = 0; i < arrayDaOrdinare.length; i++) {
     for (let j = 0; j < arrayDaOrdinare.length - 1; j++) {
-      
       let cartaAttuale = sfortuneList[arrayDaOrdinare[j]];
       let cartaSuccessiva = sfortuneList[arrayDaOrdinare[j + 1]];
 
@@ -77,13 +76,69 @@ const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setCurrentCard, set
   }
 
   const primaCartaCorrente = generateDifferentCards(nuoveCarte);
-
   const nuoveCarteOrdinate = ordinaCarteCrescenti(nuoveCarte);
 
   setPlayerCards([...nuoveCarteOrdinate]);
   setAlreadyCreatedCards([...nuoveCarteOrdinate, primaCartaCorrente]);
   setCurrentCard(primaCartaCorrente); 
   setStart(true);
+};
+
+const posizionaCartaNeiVarchi = (
+  varcoScelto, 
+  playerCards, 
+  setPlayerCards, 
+  currentCard, 
+  setCurrentCard, 
+  alreadyCreatedCards, 
+  setAlreadyCreatedCards
+) => {
+  const infoCartaCorrente = sfortuneList[currentCard];
+  let corretto = false;
+
+  
+  if (varcoScelto === 0) {
+    const primaCarta = sfortuneList[playerCards[0]];
+    if (infoCartaCorrente.indiceSfortuna <= primaCarta.indiceSfortuna) {
+      corretto = true;
+    }
+  } 
+  
+  else if (varcoScelto === playerCards.length) {
+    const ultimaCarta = sfortuneList[playerCards[playerCards.length - 1]];
+    if (infoCartaCorrente.indiceSfortuna >= ultimaCarta.indiceSfortuna) {
+      corretto = true;
+    }
+  } 
+  
+  else {
+    const cartaSinistra = sfortuneList[playerCards[varcoScelto - 1]];
+    const cartaDestra = sfortuneList[playerCards[varcoScelto]];
+
+    if (
+      infoCartaCorrente.indiceSfortuna >= cartaSinistra.indiceSfortuna &&
+      infoCartaCorrente.indiceSfortuna <= cartaDestra.indiceSfortuna
+    ) {
+      corretto = true;
+    }
+  }
+
+  if (corretto) {
+    
+    let aggiornate = [...playerCards, currentCard];
+    aggiornate = ordinaCarteCrescenti(aggiornate);
+    setPlayerCards(aggiornate);
+
+    
+    const prossimaCarta = generateDifferentCards([...alreadyCreatedCards, currentCard]);
+    setAlreadyCreatedCards([...alreadyCreatedCards, currentCard, prossimaCarta]);
+    setCurrentCard(prossimaCarta);
+  } else {
+    
+    const prossimaCarta = generateDifferentCards(alreadyCreatedCards);
+    setAlreadyCreatedCards([...alreadyCreatedCards, prossimaCarta]);
+    setCurrentCard(prossimaCarta);
+  }
 };
 
 const Header = () => {
@@ -136,13 +191,12 @@ const Body = ({
         <TouchableOpacity
           onPress={() => setStart(false)}
           style={{ marginBottom: 10 }}>
-          <Text style={{ color: 'white', textAlign: 'center' }}> Ricomincia </Text>
+          <Text style={{ color: 'white', textAlign: 'center' }}> Abbandona </Text>
         </TouchableOpacity>
         {cartaCorrente && (
           <View style={styles.card} key={cartaCorrente.id}>
-            <Text style={{ color: 'black' }}>
-              {' '}
-              Colloca la seguente sfortuna:{' '}
+            <Text style={{ color: 'black', padding: 5 }}>
+              Colloca la seguente sfortuna:
             </Text>
             <Image
               source={cartaCorrente.immagine}
@@ -158,7 +212,15 @@ const Body = ({
   }
 };
 
-const Footer = ({ start, playerCards, setPlayerCards }) => {
+const Footer = ({ 
+  start, 
+  playerCards, 
+  setPlayerCards, 
+  currentCard, 
+  setCurrentCard, 
+  alreadyCreatedCards, 
+  setAlreadyCreatedCards 
+}) => {
   const cartaIniziale = sfortuneList[1];
 
   if (start == false) {
@@ -170,13 +232,7 @@ const Footer = ({ start, playerCards, setPlayerCards }) => {
               source={cartaIniziale.immagine}
               style={{ height: 180, width: '100%', marginBottom: 10 }}
             />
-            <Text
-              style={{
-                fontSize: 15,
-                fontWeight: 'bold',
-                marginBottom: 10,
-                color: 'black',
-              }}>
+            <Text style={{ fontSize: 15, fontWeight: 'bold', marginBottom: 10, color: 'black' }}>
               La sfortuna a tuo servizio
             </Text>
           </View>
@@ -184,35 +240,58 @@ const Footer = ({ start, playerCards, setPlayerCards }) => {
       </View>
     );
   } else {
+    const renderPulsanteVarco = (indiceVarco) => (
+      <TouchableOpacity
+        key={`varco-${indiceVarco}`}
+        style={styles.footerCustomButton}
+        onPress={() => {
+          posizionaCartaNeiVarchi(
+            indiceVarco, 
+            playerCards, 
+            setPlayerCards, 
+            currentCard, 
+            setCurrentCard, 
+            alreadyCreatedCards, 
+            setAlreadyCreatedCards
+          );
+        }}
+      >
+        <Text style={{ textAlign: 'center', color: 'white', fontSize: 11 }}>Inserisci qui</Text>
+      </TouchableOpacity>
+    );
+
+    const elementiFooter = [];
+    
+    for (let i = 0; i < playerCards.length; i++) {
+      elementiFooter.push(renderPulsanteVarco(i));
+
+      const carta = sfortuneList[playerCards[i]];
+      if (carta) {
+        elementiFooter.push(
+          <View style={styles.cardFooter} key={`carta-${carta.id}`}>
+            <Image
+              source={carta.immagine}
+              style={{ height: 180, width: '100%', marginBottom: 10 }}
+            />
+            <Text style={styles.sfortuneTitleText}>{carta.titolo}</Text>
+            <Text style={styles.sfortuneIndexText}>
+              Sfortune index: {carta.indiceSfortuna}
+            </Text>
+          </View>
+        );
+      }
+    }
+    
+    elementiFooter.push(renderPulsanteVarco(playerCards.length));
+
     return (
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={true}
-        contentContainerStyle={{ alignItems: 'center' }}>
-        {playerCards.map((v) => {
-          const carta = sfortuneList[v];
-          if (!carta) return null;
-
-          return (
-            <View key={carta.id} style={styles.footerHorizontalView}>
-              <TouchableOpacity
-                style={styles.footerCustomButton}>
-                <Text style={{ textAlign: 'center', color: 'white' }}> Posiziona qui </Text>
-              </TouchableOpacity>
-
-              <View style={styles.cardFooter}>
-                <Image
-                  source={carta.immagine}
-                  style={{ height: 180, width: '100%', marginBottom: 10 }}
-                />
-                <Text style={styles.sfortuneTitleText}>{carta.titolo}</Text>
-                <Text style={styles.sfortuneIndexText}>
-                  Sfortune index: {carta.indiceSfortuna}
-                </Text>
-              </View>
-            </View>
-          );
-        })}
+        contentContainerStyle={{ alignItems: 'center', paddingHorizontal: 10 }}>
+        <View style={styles.footerHorizontalView}>
+          {elementiFooter}
+        </View>
       </ScrollView>
     );
   }
@@ -242,6 +321,10 @@ export default function App() {
             start={start}
             playerCards={playerCards}
             setPlayerCards={setPlayerCards}
+            currentCard={currentCard}
+            setCurrentCard={setCurrentCard}
+            alreadyCreatedCards={alreadyCreatedCards}
+            setAlreadyCreatedCards={setAlreadyCreatedCards}
           />
         </ScrollView>
       </SafeAreaView>
@@ -304,20 +387,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2F4F8',
     borderRadius: 20,
     overflow: 'hidden',
-    width: 250,
+    width: 200,
     alignSelf: 'center',
-    marginRight: 20,
+    marginRight: 10,
+    marginLeft: 10,
   },
   footerHorizontalView: {
     alignItems: 'center',
     flexDirection: 'row',
   },
   footerCustomButton: {
-    marginRight: 20,
     backgroundColor: '#ff5722',
-    borderRadius: 25,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    borderRadius: 15,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sfortuneIndexText: {
     marginBottom: 5,
@@ -326,5 +411,7 @@ const styles = StyleSheet.create({
   sfortuneTitleText: {
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 13,
+    paddingHorizontal: 4,
   },
 });
