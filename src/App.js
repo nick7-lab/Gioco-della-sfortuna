@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Alert,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
@@ -55,7 +56,7 @@ const ordinaCarteCrescenti = (arrayDaOrdinare) => {
   return arrayDaOrdinare;
 };
 
-const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setCurrentCard, setStart }) => {
+const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setCurrentCard, setVite, setCarteIndovinate, setStart }) => {
   const nuoveCarte = [];
   let numeroCasuale = 0;
   let counter = 0;
@@ -81,6 +82,8 @@ const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setCurrentCard, set
   setPlayerCards([...nuoveCarteOrdinate]);
   setAlreadyCreatedCards([...nuoveCarteOrdinate, primaCartaCorrente]);
   setCurrentCard(primaCartaCorrente); 
+  setVite(3); 
+  setCarteIndovinate(0); 
   setStart(true);
 };
 
@@ -91,26 +94,28 @@ const posizionaCartaNeiVarchi = (
   currentCard, 
   setCurrentCard, 
   alreadyCreatedCards, 
-  setAlreadyCreatedCards
+  setAlreadyCreatedCards, 
+  vite,
+  setVite,
+  carteIndovinate,
+  setCarteIndovinate,
+  setStart
 ) => {
   const infoCartaCorrente = sfortuneList[currentCard];
   let corretto = false;
 
-  
   if (varcoScelto === 0) {
     const primaCarta = sfortuneList[playerCards[0]];
     if (infoCartaCorrente.indiceSfortuna <= primaCarta.indiceSfortuna) {
       corretto = true;
     }
   } 
-  
   else if (varcoScelto === playerCards.length) {
     const ultimaCarta = sfortuneList[playerCards[playerCards.length - 1]];
     if (infoCartaCorrente.indiceSfortuna >= ultimaCarta.indiceSfortuna) {
       corretto = true;
     }
   } 
-  
   else {
     const cartaSinistra = sfortuneList[playerCards[varcoScelto - 1]];
     const cartaDestra = sfortuneList[playerCards[varcoScelto]];
@@ -124,27 +129,51 @@ const posizionaCartaNeiVarchi = (
   }
 
   if (corretto) {
-    
     let aggiornate = [...playerCards, currentCard];
     aggiornate = ordinaCarteCrescenti(aggiornate);
-    setPlayerCards(aggiornate);
-
     
+    const nuoveCarteIndovinate = carteIndovinate + 1;
+    setPlayerCards(aggiornate);
+    setCarteIndovinate(nuoveCarteIndovinate);
+
+    if (nuoveCarteIndovinate === 6) {
+      Alert.alert("COMPLIMENTI!", "Hai inserito correttamente 6 carte e hai vinto!", [
+        { text: "Torna al Menu", onPress: () => setStart(false) }
+      ]);
+      return;
+    }
+
     const prossimaCarta = generateDifferentCards([...alreadyCreatedCards, currentCard]);
-    setAlreadyCreatedCards([...alreadyCreatedCards, currentCard, prossimaCarta]);
+    setAlreadyCreatedCards([...alreadyCreatedCards, currentCard, prossimaCarta]); // CORRETTO QUI: prossimaCarta
     setCurrentCard(prossimaCarta);
   } else {
-    
+    const nuoveVite = vite - 1;
+    setVite(nuoveVite);
+
+    if (nuoveVite <= 0) {
+      Alert.alert("GAME OVER", "Hai esaurito le tue vite!", [
+        { text: "Riprova", onPress: () => setStart(false) }
+      ]);
+      return;
+    }
+
     const prossimaCarta = generateDifferentCards(alreadyCreatedCards);
     setAlreadyCreatedCards([...alreadyCreatedCards, prossimaCarta]);
     setCurrentCard(prossimaCarta);
+    Alert.alert("Sbagliato!", "La posizione scelta non è corretta.");
   }
 };
 
-const Header = () => {
+const Header = ({ vite, carteIndovinate, start }) => {
   return (
     <View style={styles.headerView}>
       <Text style={styles.headerText}>GIOCO DELLA SFORTUNA</Text>
+      {start && (
+        <View style={styles.statsContainer}>
+          <Text style={styles.statsText}>VITE: {Array(vite).fill('❤️').join('') || '💀'}</Text>
+          <Text style={styles.statsText}>CARTE: {carteIndovinate}/6</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -157,6 +186,8 @@ const Body = ({
   setAlreadyCreatedCards,
   currentCard,
   setCurrentCard,
+  setVite,
+  setCarteIndovinate,
 }) => {
   if (start == false) {
     return (
@@ -174,6 +205,8 @@ const Body = ({
                 alreadyCreatedCards,
                 setAlreadyCreatedCards,
                 setCurrentCard, 
+                setVite,
+                setCarteIndovinate,
                 setStart,
               });
             }}
@@ -219,7 +252,12 @@ const Footer = ({
   currentCard, 
   setCurrentCard, 
   alreadyCreatedCards, 
-  setAlreadyCreatedCards 
+  setAlreadyCreatedCards, 
+  vite,
+  setVite,
+  carteIndovinate,
+  setCarteIndovinate,
+  setStart
 }) => {
   const cartaIniziale = sfortuneList[1];
 
@@ -252,7 +290,12 @@ const Footer = ({
             currentCard, 
             setCurrentCard, 
             alreadyCreatedCards, 
-            setAlreadyCreatedCards
+            setAlreadyCreatedCards, 
+            vite,
+            setVite,
+            carteIndovinate,
+            setCarteIndovinate,
+            setStart
           );
         }}
       >
@@ -302,12 +345,14 @@ export default function App() {
   const [playerCards, setPlayerCards] = useState([]);
   const [alreadyCreatedCards, setAlreadyCreatedCards] = useState([]);
   const [currentCard, setCurrentCard] = useState(null);
+  const [vite, setVite] = useState(3); 
+  const [carteIndovinate, setCarteIndovinate] = useState(0); 
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.containerMaster}>
-        <Header />
-        <ScrollView showsVerticalScrollIndicator={true}>
+        <Header vite={vite} carteIndovinate={carteIndovinate} start={start} />
+        <ScrollView showsVerticalScrollIndicator={false}>
           <Body
             start={start}
             setStart={setStart}
@@ -316,6 +361,8 @@ export default function App() {
             setAlreadyCreatedCards={setAlreadyCreatedCards}
             currentCard={currentCard}       
             setCurrentCard={setCurrentCard} 
+            setVite={setVite}
+            setCarteIndovinate={setCarteIndovinate}
           />
           <Footer
             start={start}
@@ -325,6 +372,11 @@ export default function App() {
             setCurrentCard={setCurrentCard}
             alreadyCreatedCards={alreadyCreatedCards}
             setAlreadyCreatedCards={setAlreadyCreatedCards}
+            vite={vite}
+            setVite={setVite}
+            carteIndovinate={carteIndovinate}
+            setCarteIndovinate={setCarteIndovinate}
+            setStart={setStart}
           />
         </ScrollView>
       </SafeAreaView>
@@ -346,6 +398,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: 'white',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 8,
+    paddingHorizontal: 10,
+  },
+  statsText: {
+    fontSize: 16,
+    color: '#ff5722',
+    fontWeight: 'bold',
   },
   bodyStartView: {
     marginBottom: 60,
