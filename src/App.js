@@ -37,7 +37,7 @@ const generateDifferentCards = (alreadyCreatedCards) => {
   return sfortunaCasuale;
 };
 
-const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setStart }) => {
+const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setStart, playerCards }) => {
   const nuoveCarte = [];
   let numeroCasuale = 0;
   let counter = 0;
@@ -60,6 +60,7 @@ const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setStart }) => {
   setPlayerCards([...nuoveCarte]);
   setAlreadyCreatedCards([...nuoveCarte]);
   setStart(true);
+
 };
 
 const Header = () => {
@@ -76,6 +77,7 @@ const Body = ({
   setPlayerCards,
   alreadyCreatedCards,
   setAlreadyCreatedCards,
+  playerCards
 }) => {
   if (start == false) {
     return (
@@ -90,9 +92,9 @@ const Body = ({
             onPress={() => {
               startGame({
                 setPlayerCards,
-                alreadyCreatedCards,
                 setAlreadyCreatedCards,
                 setStart,
+                playerCards
               });
             }}
             activeOpacity={0.7}>
@@ -182,7 +184,7 @@ const Footer = ({ start, playerCards, setPlayerCards }) => {
                 <Text style = {{textAlign: 'center'}}> Posiziona quì </Text>
               </TouchableOpacity>
 
-              {playerCards[v] !== undefined && (
+              {playerCards[v] !== undefined && sfortuneList[carta] ? (
                 <View key={sfortuneList[carta].id} style={styles.cardFooter}>
                 <Image
                   source={sfortuneList[carta].immagine}
@@ -193,7 +195,7 @@ const Footer = ({ start, playerCards, setPlayerCards }) => {
                   Sfortune index: {sfortuneList[carta].indiceSfortuna}
                 </Text>
               </View>
-              )}
+              ) : null}
               
             </View>
           );
@@ -219,6 +221,7 @@ export default function App() {
             setPlayerCards={setPlayerCards}
             alreadyCreatedCards={alreadyCreatedCards}
             setAlreadyCreatedCards={setAlreadyCreatedCards}
+            playerCards={playerCards}
           />
           <Footer
             start={start}
