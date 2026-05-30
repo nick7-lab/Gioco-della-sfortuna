@@ -1,15 +1,19 @@
 import {StyleSheet, View, Text, TouchableOpacity, ScrollView, Image} from 'react-native'
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import sfortuneList from './card.js'
-
+ 
 const generateDifferentCards = (alreadyCreatedCards) => {
   let sfortunaCasuale
   let trovato = false
+  let tentativi = 0
 
   while (!trovato) {
     let counter = 0
     let numeroCasuale = Math.floor(Math.random() * 50) + 1 
+    tentativi ++
+
+    if(tentativi == 100) break
 
     for (let i = 0; i < alreadyCreatedCards.length; i++) {
       if (numeroCasuale != alreadyCreatedCards[i]) {
@@ -26,7 +30,7 @@ const generateDifferentCards = (alreadyCreatedCards) => {
   return sfortunaCasuale
 }
 
-const startGame = ({setPlayerCards, setAlreadyCreatedCards}) => {
+const startGame = ({setPlayerCards, setAlreadyCreatedCards, setStart}) => {
     const nuoveCarte = []
     let numeroCasuale = 0
     let counter = 0
@@ -48,6 +52,7 @@ const startGame = ({setPlayerCards, setAlreadyCreatedCards}) => {
 
     setPlayerCards([...nuoveCarte])
     setAlreadyCreatedCards([...nuoveCarte])
+    setStart(true)
 }
 
 const Header = () => {
@@ -75,9 +80,8 @@ const Body = ({start, setStart, setPlayerCards, alreadyCreatedCards, setAlreadyC
           <TouchableOpacity 
             style={styles.bodyCustomButton1} 
             onPress={() => {
-             startGame({setPlayerCards, setAlreadyCreatedCards})
-             setStart(true)}
-            }
+               startGame({setPlayerCards, alreadyCreatedCards, setAlreadyCreatedCards, setStart})
+             }}
             activeOpacity={0.7} 
           >
           <Text style={styles.bodyCustomButtonText1}>START</Text>
@@ -92,7 +96,7 @@ const Body = ({start, setStart, setPlayerCards, alreadyCreatedCards, setAlreadyC
     const cartaCorrente = sfortuneList[sfortunaCasuale]
 
     return(
-      <View>
+      <View style = {{marginBottom: 20}}>
         <TouchableOpacity 
           onPress={() => setStart(false)}
           style = {{marginBottom: 10}}
