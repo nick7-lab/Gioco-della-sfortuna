@@ -1,3 +1,7 @@
+/**
+ * @author Carbonella Nicandro
+ */
+
 import {
   StyleSheet,
   View,
