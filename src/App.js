@@ -11,6 +11,13 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
 import sfortuneList from './card.js';
 
+/**
+ * Genera un ID di sfortuna casuale che non sia ancora stato estratto.
+ * Implementa un sistema di sicurezza a 100 tentativi per evitare loop infiniti.
+ *
+ * @param {number[]} alreadyCreatedCards - Array contenente gli ID delle carte già utilizzate.
+ * @returns {number} ID numerico della nuova carta sfortuna estratta.
+ */
 const generateDifferentCards = (alreadyCreatedCards) => {
   let sfortunaCasuale = 1; 
   let trovato = false;
@@ -40,6 +47,13 @@ const generateDifferentCards = (alreadyCreatedCards) => {
   return sfortunaCasuale;
 };
 
+/**
+ * Ordina un array di ID di carte sfortuna in base al loro indiceSfortuna crescente.
+ * Utilizza un algoritmo di ordinamento Bubble Sort classico.
+ *
+ * @param {number[]} arrayDaOrdinare - L'array di ID numerici da ordinare.
+ * @returns {number[]} L'array ordinato in base all'indice di sfortuna.
+ */
 const ordinaCarteCrescenti = (arrayDaOrdinare) => {
   for (let i = 0; i < arrayDaOrdinare.length; i++) {
     for (let j = 0; j < arrayDaOrdinare.length - 1; j++) {
@@ -56,6 +70,18 @@ const ordinaCarteCrescenti = (arrayDaOrdinare) => {
   return arrayDaOrdinare;
 };
 
+/**
+ * Inizializza lo stato del gioco estraendo le prime 3 carte per il giocatore,
+ * ordinandole, impostando le vite, azzerando il contatore e generando la prima carta corrente.
+ *
+ * @param {Object} params - I setter degli stati di React.
+ * @param {function} params.setPlayerCards - Setter per le carte in mano al giocatore.
+ * @param {function} params.setAlreadyCreatedCards - Setter per lo storico delle carte estratte.
+ * @param {function} params.setCurrentCard - Setter per la carta attualmente da piazzare.
+ * @param {function} params.setVite - Setter per il numero di vite rimaste.
+ * @param {function} params.setCarteIndovinate - Setter per il contatore delle carte indovinate.
+ * @param {function} params.setStart - Setter per avviare la sessione di gioco attiva.
+ */
 const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setCurrentCard, setVite, setCarteIndovinate, setStart }) => {
   const nuoveCarte = [];
   let numeroCasuale = 0;
@@ -87,6 +113,24 @@ const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setCurrentCard, set
   setStart(true);
 };
 
+/**
+ * Gestisce la logica di posizionamento della carta corrente nel varco selezionato.
+ * Verifica la correttezza matematica della posizione, aggiorna il tabellone se esatto,
+ * oppure scala una vita se errato, gestendo anche le condizioni di Vittoria e Game Over.
+ *
+ * @param {number} varcoScelto - L'indice dello spazio/intervallo in cui inserire la carta.
+ * @param {number[]} playerCards - Array degli ID delle carte attuali del giocatore.
+ * @param {function} setPlayerCards - Setter per aggiornare le carte del giocatore.
+ * @param {number} currentCard - ID della carta sfortuna attualmente sotto esame.
+ * @param {function} setCurrentCard - Setter per la prossima carta da esaminare.
+ * @param {number[]} alreadyCreatedCards - Storico di tutti gli ID delle carte estratti finora.
+ * @param {function} setAlreadyCreatedCards - Setter dello storico delle carte estratte.
+ * @param {number} vite - Numero di vite correnti del giocatore.
+ * @param {function} setVite - Setter per aggiornare le vite residue.
+ * @param {number} carteIndovinate - Numero di carte indovinate correttamente in questa partita.
+ * @param {function} setCarteIndovinate - Setter per incrementare le carte indovinate.
+ * @param {function} setStart - Setter per interrompere o azzerare la partita.
+ */
 const posizionaCartaNeiVarchi = (
   varcoScelto, 
   playerCards, 
@@ -144,7 +188,7 @@ const posizionaCartaNeiVarchi = (
     }
 
     const prossimaCarta = generateDifferentCards([...alreadyCreatedCards, currentCard]);
-    setAlreadyCreatedCards([...alreadyCreatedCards, currentCard, prossimaCarta]); // CORRETTO QUI: prossimaCarta
+    setAlreadyCreatedCards([...alreadyCreatedCards, currentCard, prossimaCarta]); 
     setCurrentCard(prossimaCarta);
   } else {
     const nuoveVite = vite - 1;
@@ -157,13 +201,23 @@ const posizionaCartaNeiVarchi = (
       return;
     }
 
-    const prossimaCarta = generateDifferentCards(alreadyCreatedCards);
-    setAlreadyCreatedCards([...alreadyCreatedCards, prossimaCarta]);
-    setCurrentCard(prossimaCarta);
+    const prochaineCarta = generateDifferentCards(alreadyCreatedCards);
+    setAlreadyCreatedCards([...alreadyCreatedCards, prochaineCarta]);
+    setCurrentCard(prochaineCarta);
     Alert.alert("Sbagliato!", "La posizione scelta non è corretta.");
   }
 };
 
+/**
+ * Componente Header. Mostra il titolo del gioco e, se la partita è avviata,
+ * le statistiche correnti relative alle vite e alle carte completate.
+ *
+ * @component
+ * @param {Object} props - Proprietà del componente.
+ * @param {number} props.vite - Vite restanti.
+ * @param {number} props.carteIndovinate - Numero di carte indovinate.
+ * @param {boolean} props.start - Stato di attivazione del gioco.
+ */
 const Header = ({ vite, carteIndovinate, start }) => {
   return (
     <View style={styles.headerView}>
@@ -178,6 +232,22 @@ const Header = ({ vite, carteIndovinate, start }) => {
   );
 };
 
+/**
+ * Componente Body. Gestisce la vista iniziale con il bottone START,
+ * oppure visualizza la carta sfortuna corrente da collocare sul tabellone.
+ *
+ * @component
+ * @param {Object} props - Proprietà del componente.
+ * @param {boolean} props.start - Stato di attivazione del gioco.
+ * @param {function} props.setStart - Funzione per impostare lo stato di avvio.
+ * @param {function} props.setPlayerCards - Funzione per impostare le carte del giocatore.
+ * @param {number[]} props.alreadyCreatedCards - ID delle carte create fino a ora.
+ * @param {function} props.setAlreadyCreatedCards - Funzione per aggiornare lo storico delle carte.
+ * @param {number} props.currentCard - ID della carta attualmente estratta.
+ * @param {function} props.setCurrentCard - Funzione per aggiornare la carta corrente.
+ * @param {function} props.setVite - Funzione per reimpostare le vite iniziali.
+ * @param {function} props.setCarteIndovinate - Funzione per azzerare il counter carte.
+ */
 const Body = ({
   start,
   setStart,
@@ -245,6 +315,25 @@ const Body = ({
   }
 };
 
+/**
+ * Componente Footer. Renderizza una lista orizzontale scorrevole che alterna i varchi
+ * (pulsanti interattivi per l'inserimento) e le carte attualmente presenti sul tabellone del giocatore.
+ *
+ * @component
+ * @param {Object} props - Proprietà del componente.
+ * @param {boolean} props.start - Stato di attivazione del gioco.
+ * @param {number[]} props.playerCards - ID delle carte possedute dal giocatore.
+ * @param {function} props.setPlayerCards - Funzione per impostare le carte del giocatore.
+ * @param {number} props.currentCard - ID della carta attualmente estratta.
+ * @param {function} props.setCurrentCard - Funzione per impostare la carta corrente.
+ * @param {number[]} props.alreadyCreatedCards - ID delle carte estratte complessivamente.
+ * @param {function} props.setAlreadyCreatedCards - Funzione per aggiornare le carte estratte complessivamente.
+ * @param {number} props.vite - Vite rimanenti del giocatore.
+ * @param {function} props.setVite - Funzione per scalare o reimpostare le vite.
+ * @param {number} props.carteIndovinate - Numero di risposte corrette date.
+ * @param {function} props.setCarteIndovinate - Funzione per aggiornare il numero di risposte corrette.
+ * @param {function} props.setStart - Funzione per stoppare o resettare il gioco.
+ */
 const Footer = ({ 
   start, 
   playerCards, 
@@ -340,6 +429,12 @@ const Footer = ({
   }
 };
 
+/**
+ * Componente Principale dell'Applicazione (App).
+ * Gestisce l'intera architettura degli stati globali del Gioco della Sfortuna.
+ *
+ * @component
+ */
 export default function App() {
   const [start, setStart] = useState(false);
   const [playerCards, setPlayerCards] = useState([]);
