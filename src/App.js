@@ -7,11 +7,11 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import sfortuneList from './card.js';
 
 const generateDifferentCards = (alreadyCreatedCards) => {
-  let sfortunaCasuale;
+  let sfortunaCasuale = 1; 
   let trovato = false;
   let tentativi = 0;
 
@@ -20,7 +20,9 @@ const generateDifferentCards = (alreadyCreatedCards) => {
     let numeroCasuale = Math.floor(Math.random() * 50) + 1;
     tentativi++;
 
-    if (tentativi == 100) break;
+    if (tentativi == 100) {
+      break;
+    }
 
     for (let i = 0; i < alreadyCreatedCards.length; i++) {
       if (numeroCasuale != alreadyCreatedCards[i]) {
@@ -37,7 +39,24 @@ const generateDifferentCards = (alreadyCreatedCards) => {
   return sfortunaCasuale;
 };
 
-const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setStart, playerCards }) => {
+const ordinaCarteCrescenti = (arrayDaOrdinare) => {
+  for (let i = 0; i < arrayDaOrdinare.length; i++) {
+    for (let j = 0; j < arrayDaOrdinare.length - 1; j++) {
+      
+      let cartaAttuale = sfortuneList[arrayDaOrdinare[j]];
+      let cartaSuccessiva = sfortuneList[arrayDaOrdinare[j + 1]];
+
+      if (cartaAttuale && cartaSuccessiva && cartaAttuale.indiceSfortuna > cartaSuccessiva.indiceSfortuna) {
+        let temp = arrayDaOrdinare[j];
+        arrayDaOrdinare[j] = arrayDaOrdinare[j + 1];
+        arrayDaOrdinare[j + 1] = temp;
+      }
+    }
+  }
+  return arrayDaOrdinare;
+};
+
+const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setCurrentCard, setStart }) => {
   const nuoveCarte = [];
   let numeroCasuale = 0;
   let counter = 0;
@@ -57,10 +76,14 @@ const startGame = ({ setPlayerCards, setAlreadyCreatedCards, setStart, playerCar
     }
   }
 
-  setPlayerCards([...nuoveCarte]);
-  setAlreadyCreatedCards([...nuoveCarte]);
-  setStart(true);
+  const primaCartaCorrente = generateDifferentCards(nuoveCarte);
 
+  const nuoveCarteOrdinate = ordinaCarteCrescenti(nuoveCarte);
+
+  setPlayerCards([...nuoveCarteOrdinate]);
+  setAlreadyCreatedCards([...nuoveCarteOrdinate, primaCartaCorrente]);
+  setCurrentCard(primaCartaCorrente); 
+  setStart(true);
 };
 
 const Header = () => {
@@ -77,7 +100,8 @@ const Body = ({
   setPlayerCards,
   alreadyCreatedCards,
   setAlreadyCreatedCards,
-  playerCards
+  currentCard,
+  setCurrentCard,
 }) => {
   if (start == false) {
     return (
@@ -92,9 +116,10 @@ const Body = ({
             onPress={() => {
               startGame({
                 setPlayerCards,
+                alreadyCreatedCards,
                 setAlreadyCreatedCards,
+                setCurrentCard, 
                 setStart,
-                playerCards
               });
             }}
             activeOpacity={0.7}>
@@ -104,15 +129,14 @@ const Body = ({
       </View>
     );
   } else {
-    const sfortunaCasuale = generateDifferentCards(alreadyCreatedCards);
-    const cartaCorrente = sfortuneList[sfortunaCasuale];
+    const cartaCorrente = sfortuneList[currentCard];
 
     return (
       <View style={{ marginBottom: 20 }}>
         <TouchableOpacity
           onPress={() => setStart(false)}
           style={{ marginBottom: 10 }}>
-          <Text style={{ color: 'white' }}> Ricomincia </Text>
+          <Text style={{ color: 'white', textAlign: 'center' }}> Ricomincia </Text>
         </TouchableOpacity>
         {cartaCorrente && (
           <View style={styles.card} key={cartaCorrente.id}>
@@ -135,9 +159,7 @@ const Body = ({
 };
 
 const Footer = ({ start, playerCards, setPlayerCards }) => {
-  //all'inizio del gioco
-  const sfortunaCasuale = Math.floor(Math.random() * 50) + 1;
-  const cartaIniziale = sfortuneList[sfortunaCasuale];
+  const cartaIniziale = sfortuneList[1];
 
   if (start == false) {
     return (
@@ -162,41 +184,32 @@ const Footer = ({ start, playerCards, setPlayerCards }) => {
       </View>
     );
   } else {
-    
-    const elementi = []
-    for(let i = 0; i<playerCards.length + 1; i++){
-      elementi.push(i)
-    }
-
     return (
       <ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={true}
-        style={{ navigatorStyle: 'center' }}
         contentContainerStyle={{ alignItems: 'center' }}>
-        {elementi.map((v) => {
-          const carta = playerCards[v];
+        {playerCards.map((v) => {
+          const carta = sfortuneList[v];
+          if (!carta) return null;
 
           return (
-            <View style={styles.footerHorizontalView}>
+            <View key={carta.id} style={styles.footerHorizontalView}>
               <TouchableOpacity
                 style={styles.footerCustomButton}>
-                <Text style = {{textAlign: 'center'}}> Posiziona quì </Text>
+                <Text style={{ textAlign: 'center', color: 'white' }}> Posiziona qui </Text>
               </TouchableOpacity>
 
-              {playerCards[v] !== undefined && sfortuneList[carta] ? (
-                <View key={sfortuneList[carta].id} style={styles.cardFooter}>
+              <View style={styles.cardFooter}>
                 <Image
-                  source={sfortuneList[carta].immagine}
+                  source={carta.immagine}
                   style={{ height: 180, width: '100%', marginBottom: 10 }}
                 />
-                <Text style={styles.sfortuneTitleText}>{sfortuneList[carta].titolo}</Text>
+                <Text style={styles.sfortuneTitleText}>{carta.titolo}</Text>
                 <Text style={styles.sfortuneIndexText}>
-                  Sfortune index: {sfortuneList[carta].indiceSfortuna}
+                  Sfortune index: {carta.indiceSfortuna}
                 </Text>
               </View>
-              ) : null}
-              
             </View>
           );
         })}
@@ -209,19 +222,21 @@ export default function App() {
   const [start, setStart] = useState(false);
   const [playerCards, setPlayerCards] = useState([]);
   const [alreadyCreatedCards, setAlreadyCreatedCards] = useState([]);
+  const [currentCard, setCurrentCard] = useState(null);
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.containerMaster}>
         <Header />
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={true}>
           <Body
             start={start}
             setStart={setStart}
             setPlayerCards={setPlayerCards}
             alreadyCreatedCards={alreadyCreatedCards}
             setAlreadyCreatedCards={setAlreadyCreatedCards}
-            playerCards={playerCards}
+            currentCard={currentCard}       
+            setCurrentCard={setCurrentCard} 
           />
           <Footer
             start={start}
