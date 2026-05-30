@@ -2,7 +2,7 @@ import {StyleSheet, View, Text, TouchableOpacity, ScrollView, Image} from 'react
 import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context'
 import React, {useState, useEffect} from 'react'
 import sfortuneList from './card.js'
- 
+
 const generateDifferentCards = (alreadyCreatedCards) => {
   let sfortunaCasuale
   let trovato = false
@@ -110,6 +110,9 @@ const Body = ({start, setStart, setPlayerCards, alreadyCreatedCards, setAlreadyC
               source = {cartaCorrente.immagine}
               style = {{height: 180, width: '100%', marginBottom: 10}}
             />
+            <Text style = {[styles.sfortuneTitleText, {marginBottom: 10}]}>
+              {cartaCorrente.titolo}
+            </Text>
           </View>
         )}
       </View>
@@ -119,8 +122,11 @@ const Body = ({start, setStart, setPlayerCards, alreadyCreatedCards, setAlreadyC
 }
 
 const Footer = ({start, playerCards, setPlayerCards}) => {
+  //all'inizio del gioco
   const sfortunaCasuale = Math.floor(Math.random() * 50) + 1
   const cartaIniziale = sfortuneList[sfortunaCasuale]
+
+  let button = playerCards.length + 1
 
   if (start == false){
     return(
@@ -157,6 +163,12 @@ const Footer = ({start, playerCards, setPlayerCards}) => {
               source = {carta.immagine}
               style = {{height: 180, width: '100%', marginBottom: 10}}
             />
+            <Text style = {styles.sfortuneTitleText}>
+              {carta.titolo}
+            </Text>
+            <Text style = {styles.sfortuneIndexText}>
+              Sfortune index: {carta.indiceSfortuna}
+            </Text>
           </View>
         )
       })}
@@ -174,18 +186,22 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView style = {styles.containerMaster}>
         <Header/>
-        <Body 
-          start = {start} 
-          setStart = {setStart} 
-          setPlayerCards = {setPlayerCards}
-          alreadyCreatedCards = {alreadyCreatedCards}
-          setAlreadyCreatedCards = {setAlreadyCreatedCards}
+        <ScrollView
+          showsVerticalScrollIndicator = {false}
+        >
+          <Body 
+            start = {start} 
+            setStart = {setStart} 
+            setPlayerCards = {setPlayerCards}
+            alreadyCreatedCards = {alreadyCreatedCards}
+            setAlreadyCreatedCards = {setAlreadyCreatedCards}
+            />
+          <Footer
+            start = {start}
+            playerCards = {playerCards}
+            setPlayerCards = {setPlayerCards}
           />
-        <Footer
-          start = {start}
-          playerCards = {playerCards}
-          setPlayerCards = {setPlayerCards}
-        />
+        </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   )
@@ -249,5 +265,13 @@ const styles = StyleSheet.create({
     width: 250,
     alignSelf: 'center',
     marginRight: 20
+  },
+  sfortuneIndexText: {
+    marginBottom: 5,
+    color: 'blue'
+  },
+  sfortuneTitleText: {
+    fontWeight: 'bold',
+    textAlign: 'center'
   }
 })
